@@ -189,40 +189,42 @@ def get_updated_qty():
 def update_book():
     """Allows the user to update book information."""
     try:
-        # Enter valid book ID to edit book information.
         id = get_book_id(prompt="Enter book ID to update: ")
-        # Connect to database.
-        connection = sqlite3.connect("ebookstore.db")
-        # Get cursor.
-        cursor = connection.cursor()
-        # Select the book from row with ID input.
-        cursor.execute('''SELECT * FROM book WHERE id = ?''', (id,))
-        # Variable 'book' created to store book information.
-        book = cursor.fetchone()
-
-        if book:
-            print("Current book details:", book)
-            # Calls function to get updated title for book from user.
-            new_title = get_updated_title()
-            # If no input title remains the same or becomes 'new_title'.
-            title = new_title or book[1]
-            # Calls function to get updated author name for book from user.
-            new_author = get_updated_author()
-            # If no input author name remains the same or becomes 'new_author'.
-            author = new_author or book[2]
-            # Calls function to get updated quantity of books from user.
-            new_qty = get_updated_qty()
-            # If no input quantity remains the same or becomes 'new_qty'.
-            qty = new_qty or book[3]
-
-            # Updates specific book details based on the user inputs.
-            cursor.execute('''UPDATE book SET title = ?, author = ?, qty = ?
-                           WHERE id = ?''', (title, author, qty, id))
-            connection.commit()
-            print("Book updated successfully!")
-        else:
-            print("Book not found.")
-        connection.close()
+        
+        # Connect to database
+        with sqlite3.connect("ebookstore.db") as connection:
+            cursor = connection.cursor()
+            
+            # Fetch the current book details
+            cursor.execute("SELECT * FROM book WHERE id = ?", (id,))
+            book = cursor.fetchone()
+            
+            if book:
+                print("Current book details:", book)
+                
+                # Gather updates from the user
+                updates = {}
+                new_title = get_updated_title()
+                if new_title:
+                    updates["title"] = new_title
+                new_author = get_updated_author()
+                if new_author:
+                    updates["author"] = new_author
+                new_qty = get_updated_qty()
+                if new_qty:
+                    updates["qty"] = new_qty
+                
+                # If there are updates, construct and execute the update query
+                if updates:
+                    query = "UPDATE book SET " + ", ".join(f"{key} = ?" for key in updates) + " WHERE id = ?"
+                    params = list(updates.values()) + [id]
+                    cursor.execute(query, params)
+                    connection.commit()
+                    print("Book updated successfully!")
+                else:
+                    print("No changes were made.")
+            else:
+                print("Book not found.")
     except Exception as e:
         print(f"Error: {e}")
 
