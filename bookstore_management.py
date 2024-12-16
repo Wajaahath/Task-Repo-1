@@ -3,8 +3,14 @@
 # Imports
 import sqlite3
 
+
 def create_database():
-    """Creates the ebookstore database and populates it with initial data."""
+    """
+    Creates the ebookstore database and populates it with initial data.
+
+    - If the database or the "book" table does not exist, it will be created.
+    - Prepopulates the "book" table with a predefined set of books.
+    """
     connection = sqlite3.connect("ebookstore.db")
     cursor = connection.cursor()
 
@@ -34,10 +40,19 @@ def create_database():
     connection.commit()
     connection.close()
 
+
 def get_book_id(prompt="Enter book ID: "):
     """
-    Prompt the user for an integer input based on the book ID.
-    Displays error messages for invalid inputs.
+    Prompts the user to input a valid book ID.
+
+    - Ensures that the input is a positive integer.
+    - Re-prompts the user in case of invalid input.
+
+    Args:
+        prompt (str): Custom message to display when asking for input.
+
+    Returns:
+        int: A valid book ID entered by the user.
     """
     while True:  # Loop to keep asking for valid user input.
         try:
@@ -50,10 +65,16 @@ def get_book_id(prompt="Enter book ID: "):
         except ValueError:
             print("Error: Invalid input. Please enter a valid book ID.")
 
+
 def get_book_title():
     """
-    Prompts the user for a string input for book title.
-    Ensures that invalid or empty inputs are handled.
+    Prompts the user to input a valid book title.
+
+    - Ensures that the title is not empty.
+    - Re-prompts the user in case of invalid input.
+
+    Returns:
+        str: A valid book title entered by the user.
     """
     while True:
         try:
@@ -65,10 +86,16 @@ def get_book_title():
         except ValueError as e:
             print(f"Error: {e}. Please enter a valid book title.")
 
+
 def get_author_name():
     """
-    Prompts the user for a string input for author of the book.
-    Ensures that invalid or empty inputs are handled.
+    Prompts the user to input a valid author name.
+
+    - Ensures that the author name is not empty and does not contain numbers.
+    - Re-prompts the user in case of invalid input.
+
+    Returns:
+        str: A valid author name entered by the user.
     """
     while True:
         try:
@@ -82,10 +109,16 @@ def get_author_name():
         except ValueError as e:
             print(f"Error: {e}. Please enter a valid author name.")
 
+
 def get_book_qty():
     """
-    Prompt the user for an integer input based on the book quantity.
-    Displays error messages for invalid inputs.
+    Prompts the user to input a valid book quantity.
+
+    - Ensures that the quantity is a positive integer.
+    - Re-prompts the user in case of invalid input.
+
+    Returns:
+        int: A valid book quantity entered by the user.
     """
     while True:
         try:
@@ -97,8 +130,15 @@ def get_book_qty():
         except ValueError:
             print("Error: Invalid input. Please enter a valid book quantity.")
 
+
 def enter_book():
-    """Allows the user to add a new book."""
+    """
+    Adds a new book to the database.
+
+    - Prompts the user for book details (ID, title, author, quantity).
+    - Ensures that the book ID is unique.
+    - Inserts the new book into the database.
+    """
     try:
         id = get_book_id()  # Gets book id to insert into table.
         # Establishes connection to database 'ebookstore.db'
@@ -129,10 +169,15 @@ def enter_book():
     except Exception as e:
         print(f"Error: {e}")
 
+
 def get_updated_title():
     """
-    Prompts the user to enter a string to update book title.
-    If there is no input will display a message.
+    Prompts the user to input a new title for a book or leave it unchanged.
+
+    - Displays a message if the user chooses to make no changes.
+
+    Returns:
+        str: The new title or an empty string if unchanged.
     """
     # Get user input and strip leading/trailing whitespace.
     user_input = input("Type in new title or press 'Enter' to make no"
@@ -142,10 +187,16 @@ def get_updated_title():
         print("You have pressed 'Enter' to make no changes to title.")
     return user_input  # Return the entered string.
 
+
 def get_updated_author():
     """
-    Prompts the user to enter a string without digits to update author name.
-    If there is no input will display a message.
+    Prompts the user to input a new author name for a book or leave it unchanged.
+
+    - Ensures that the new author name does not contain digits.
+    - Displays a message if the user chooses to make no changes.
+
+    Returns:
+        str: The new author name or an empty string if unchanged.
     """
     while True:
         user_input = input("Type in new author or press 'Enter' to make no"
@@ -163,10 +214,16 @@ def get_updated_author():
             # Return valid input.
             return user_input
 
+
 def get_updated_qty():
     """
-    Prompts the user to enter a positive integer to update book quantity.
-    If there is no input will display a message.
+    Prompts the user to input a new quantity for a book or leave it unchanged.
+
+    - Ensures that the quantity is a positive integer.
+    - Displays a message if the user chooses to make no changes.
+
+    Returns:
+        int or str: The new quantity as an integer, or an empty string if unchanged.
     """
     while True:
         user_input = input("Type in new quantity or press 'Enter' to make no"
@@ -186,8 +243,16 @@ def get_updated_qty():
         print("Invalid input. The book quantity must be a positive number."
               " Please try again.")
 
+
 def update_book():
-    """Allows the user to update book information."""
+    """
+    Updates the details of an existing book in the database.
+
+    - Prompts the user for a book ID to identify the book.
+    - Displays the current details of the book.
+    - Allows the user to modify the title, author, and/or quantity.
+    - Updates the database with the new details.
+    """
     try:
         # Enter valid book ID to edit book information.
         id = get_book_id(prompt="Enter book ID to update: ")
@@ -226,8 +291,14 @@ def update_book():
     except Exception as e:
         print(f"Error: {e}")
 
+
 def delete_book():
-    """Allows the user to delete a book."""
+    """
+    Deletes a book from the database.
+
+    - Prompts the user for a book ID.
+    - Removes the corresponding book record from the database.
+    """
     try:
         id = get_book_id(prompt="Enter book ID to delete: ")
         connection = sqlite3.connect("ebookstore.db")
@@ -240,8 +311,14 @@ def delete_book():
     except Exception as e:
         print(f"Error: {e}")
 
+
 def search_books():
-    """Allows the user to search for a book by ID."""
+    """
+    Searches for a book in the database by its ID.
+
+    - Prompts the user for a book ID.
+    - Displays the details of the book if found.
+    """
     try:
         id = get_book_id(prompt="Enter book ID to search: ")
         connection = sqlite3.connect("ebookstore.db")
@@ -260,8 +337,14 @@ def search_books():
     except Exception as e:
         print(f"Error: {e}")
 
+
 def main():
-    """Main menu for the bookstore clerk."""
+    """
+    Main menu for the bookstore management system.
+
+    - Provides options to add, update, delete, and search for books.
+    - Allows the user to exit the program.
+    """
     create_database()
 
     while True:
@@ -287,6 +370,7 @@ def main():
             break
         else:
             print("Invalid choice. Please try again.")
+
 
 if __name__ == "__main__":
     main()
